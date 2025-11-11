@@ -12,4 +12,4 @@ library1 = Library.objects.get(name=library_name)
 print(library1.books.all())
 
 # Find The Librarian Of A Library
-librarian_of_library1 = Librarian.objects.get(library__name='Central Library')
+librarian_of_library1 = Librarian.objects.get(library='Central Library')
