@@ -15,6 +15,9 @@ class SignUpView(CreateView):
     success_url = reverse_lazy('login')
     template_name = '/templates/relationship_app/register.html'
     
+def register(request):
+    return render(request, 'templates/relationship_app/register.html')
+    
 # Login View
 class CustomLoginView(LoginView):
     template_name = '/templates/relationship_app/login.html'
