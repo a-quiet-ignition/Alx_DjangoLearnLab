@@ -28,7 +28,7 @@ def list_books(request):
       """Retrieves all books and renders a template displaying the list."""
       books = Book.objects.all()  # Fetch all book instances from the database
       context = {'list_books': books}  # Create a context dictionary with book list
-      return render(request, 'relationship_app/list_books.html', context)
+      return render(request, 'templates/relationship_app/list_books.html', context)
 
 class LibraryDetailView(DetailView):
     model = Library
@@ -38,4 +38,4 @@ def library_detail(request, library_id):
     """View function to display details of a specific library."""
     library = Library.objects.get(id=library_id)  # Fetch the library instance by ID
     context = {'library': library}  # Create a context dictionary with the library
-    return render(request, 'relationship_app/library_detail.html', context)
+    return render(request, 'templates/relationship_app/library_detail.html', context)
