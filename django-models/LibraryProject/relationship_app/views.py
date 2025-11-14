@@ -54,9 +54,13 @@ def library_detail(request, library_id):
     return render(request, 'templates/relationship_app/library_detail.html', context)
 
 # Role-Based Views
-@user_passes_test(lambda u: u.userprofile.is_admin())
-def admin_view(request):
-    return render(request, 'templates/relationship_app/admin_view.html')
+class Admin_view(DetailView):
+    model= UserProfile
+    template_name = 'templates/relationship_app/admin_view.html'
+    
+    @user_passes_test(lambda u: u.userprofile.is_admin())
+    def admin_view(request):
+        return render(request, 'templates/relationship_app/admin_view.html')
 
 @user_passes_test(lambda u: u.userprofile.is_librarian())
 def librarian_view(request):
