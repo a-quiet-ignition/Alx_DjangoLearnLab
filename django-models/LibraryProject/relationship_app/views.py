@@ -54,7 +54,7 @@ def library_detail(request, library_id):
     return render(request, 'templates/relationship_app/library_detail.html', context)
 
 # Role-Based Views
-class Admin_view(DetailView):
+class AdminView(DetailView):
     model= UserProfile
     template_name = 'templates/relationship_app/admin_view.html'
     
