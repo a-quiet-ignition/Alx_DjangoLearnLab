@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, permission_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout
 from django.urls import reverse_lazy
@@ -65,3 +65,16 @@ def librarian_view(request):
 @user_passes_test(lambda u: u.userprofile.is_member())
 def member_view(request):
     return render(request, 'templates/relationship_app/member_view.html')
+
+# Permission-Based Views
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book_view(request):
+    return render(request, 'templates/relationship_app/add_book.html')
+
+@permission_required('relationship_app.can_change_book', raise_exception=True)
+def change_book_view(request):
+    return render(request, 'templates/relationship_app/change_book.html')
+
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
+def delete_book_view(request):
+    return render(request, 'templates/relationship_app/delete_book.html')
