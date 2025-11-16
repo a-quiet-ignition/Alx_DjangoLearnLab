@@ -140,3 +140,14 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'", 'ajax.googleapis.com')
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
 CSP_REPORT_URI = "/csp-reports/"
+
+# HTTPS and Secure Redirects
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 3600
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Cookies Settings
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
