@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Book
 from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.decorators import permission_required
+from .forms import ExampleForm
 
 # Create your views here.
 
@@ -40,3 +41,19 @@ def edit_book(request, book_id):
 def delete_book(request, book_id):
     # Logic to delete a book
     return render(request, 'bookshelf/delete_book.html', {'book_id': book_id})
+
+
+# Example form view
+def example_form_view(request):
+    if request.method == 'POST':
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Process form data
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            message = form.cleaned_data['message']
+            # Logic to handle the form data (e.g., send an email)
+    else:
+        form = ExampleForm()
+    
+    return render(request, 'templates/bookshelf/example_form.html', {'form': form})
