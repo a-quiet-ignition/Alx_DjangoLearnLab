@@ -22,7 +22,7 @@ viewers.permissions.set(viewer_permissions)
 
 # Permission-Protected Views
 @permission_required('bookshelf.can_view', raise_exception=True)
-def view_books(request):
+def book_list(request):
     books = Book.objects.all()
     return render(request, 'bookshelf/view_books.html', {'books': books})
 
