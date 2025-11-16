@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User, AbstractBaseUser
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
+from django.conf import settings
 
 # Create your models here.
 class Author(models.Model):
@@ -36,7 +37,7 @@ class UserProfile(models.Model):
         ('Member', 'Member'),
     ]
     
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Member')
     
     def __str__(self):
@@ -55,27 +56,3 @@ class UserProfile(models.Model):
     
     def is_member(self):
         return self.role == 'Member'
-
-# Custom User Model
-class CustomUser(AbstractBaseUser):
-    date_of_birth = models.DateField(null=True, blank=True)
-    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
-    
-    def create_user(self, username, password=None, **extra_fields):
-        if not username:
-            raise ValueError('The Username must be set')
-        user = self.model(username=username, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-    
-    def create_superuser(self, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-        
-        return self.create_user(username, password, **extra_fields)

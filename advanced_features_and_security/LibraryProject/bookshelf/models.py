@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class Book(models.Model):
@@ -7,13 +8,23 @@ class Book(models.Model):
     author = models.CharField(max_length=100)
     publication_year = models.IntegerField()
     
+    class Meta:
+        permissions = [
+            ("can_view", "Can view book"),
+            ("can create", "Can create book"),
+            ("can_edit", "Can edit book"),
+            ("can_delete", "Can delete book"),
+        ]
+    
 # Custom User Model
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
     
     def create_user(self, username, password=None, **extra_fields):
         if not username:
@@ -33,3 +44,5 @@ class CustomUser(AbstractBaseUser):
             raise ValueError('Superuser must have is_superuser=True.')
         
         return self.create_user(username, password, **extra_fields)
+    
+    
