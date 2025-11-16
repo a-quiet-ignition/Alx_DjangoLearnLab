@@ -10,4 +10,4 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_display = ('username', 'email', 'date_of_birth')
     search_fields = ('username', 'email')
 
-admin.site.register(Book, BookAdmin, CustomUser, CustomUserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
