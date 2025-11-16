@@ -1,6 +1,6 @@
 from django.db import models
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 # Create your models here.
 class Book(models.Model):
@@ -26,6 +26,8 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
     
+    
+class CustomBaseUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
             raise ValueError('The Username must be set')
@@ -44,5 +46,3 @@ class CustomUser(AbstractUser):
             raise ValueError('Superuser must have is_superuser=True.')
         
         return self.create_user(username, password, **extra_fields)
-    
-    
