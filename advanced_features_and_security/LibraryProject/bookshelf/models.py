@@ -11,7 +11,7 @@ class Book(models.Model):
     class Meta:
         permissions = [
             ("can_view", "Can view book"),
-            ("can create", "Can create book"),
+            ("can_create", "Can create book"),
             ("can_edit", "Can edit book"),
             ("can_delete", "Can delete book"),
         ]
@@ -27,7 +27,7 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['email']
     
     
-class CustomBaseUserManager(BaseUserManager):
+class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
             raise ValueError('The Username must be set')
