@@ -56,15 +56,15 @@ def library_detail(request, library_id):
 
 # Role-Based Views
 @user_passes_test(lambda u: u.userprofile.is_admin())
-def admin_view(request):
+def Admin(request):
     return render(request, 'templates/relationship_app/admin_view.html')
 
 @user_passes_test(lambda u: u.userprofile.is_librarian())
-def librarian_view(request):
+def Librarian(request):
     return render(request, 'templates/relationship_app/librarian_view.html')
 
 @user_passes_test(lambda u: u.userprofile.is_member())
-def member_view(request):
+def Member(request):
     return render(request, 'templates/relationship_app/member_view.html')
 
 # Permission-Based Views
