@@ -80,11 +80,3 @@ def change_book_view(request):
 def delete_book_view(request):
     return render(request, 'templates/relationship_app/delete_book.html')
 
-
-
-Admin_view(request):
-    return render(request, 'templates/relationship_app/admin_view.html')
-Librarian_view(request):
-    return render(request, 'templates/relationship_app/librarian_view.html')   
-Member_view(request):
-    return render(request, 'templates/relationship_app/member_view.html')
