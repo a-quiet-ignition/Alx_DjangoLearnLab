@@ -27,7 +27,6 @@ class BookViewTest(TestCase):
             title="View Test Book",
             author="View Test Author",
             publication_year=2022,
-            isbn="9876543210987"
         )
 
     def test_book_list_view(self):
@@ -45,7 +44,6 @@ class BookViewTest(TestCase):
             'title': "New Book",
             'author': "New Author",
             'publication_year': 2021,
-            'isbn': "1112223334445"
         })
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Book.objects.count(), 2)
@@ -55,7 +53,6 @@ class BookViewTest(TestCase):
             'title': "Updated Book",
             'author': "Updated Author",
             'publication_year': 2020,
-            'isbn': "5556667778889"
         }, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.book.refresh_from_db()
@@ -74,7 +71,7 @@ class BookAPITest(APITestCase):
             author="API Test Author",
             publication_year=2020,
         )
-
+        
     def test_book_list_api(self):
         response = self.client.get('/api/books/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -105,4 +102,4 @@ class BookAPITest(APITestCase):
         self.book.refresh_from_db()
         self.assertEqual(self.book.title, "API Updated Book")
     
-    
+    self.client.login(username='testuser', password='testpass')
