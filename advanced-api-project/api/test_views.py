@@ -102,4 +102,3 @@ class BookAPITest(APITestCase):
         self.book.refresh_from_db()
         self.assertEqual(self.book.title, "API Updated Book")
     
-    self.client.login(username='testuser', password='testpass')
