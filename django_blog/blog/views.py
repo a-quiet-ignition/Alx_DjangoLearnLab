@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView, ListView, DetailView, UpdateView, DeleteView
+from .models import Post
 from .forms import UserUpdateForm, ProfileUpdateForm
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 # Create your views here.
 class SignUpView(CreateView):
@@ -14,7 +16,7 @@ class SignUpView(CreateView):
     
 class ProfileView(TemplateView):
     template_name = 'blog/profile.html'
-
+    
 
 # Profile Management View
 @login_required
@@ -39,3 +41,41 @@ def update_profile(request):
     return render(request, 'blog/update_profile.html', context)
 
 
+# Post Model Views
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+    ordering = ['published_date']
+    
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'
+    
+class PostCreateView(CreateView):
+    model = Post
+    template_name = 'blog/post_form.html'
+    fields = ['author', 'title', 'content']
+    success_url = reverse_lazy('post_list')
+    
+class PostUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
+    model = Post
+    template_name = 'blog/post_form.html'
+    fields = ['title', 'content']
+    success_url = reverse_lazy('post_list')
+    
+    # Permission check for update
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+    
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'blog/post_confirm_delete.html'
+    success_url = reverse_lazy('post_list')
+    
+    # Permission check for deletion
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+    
