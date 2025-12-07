@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from .models import Profile, Post, Comment, Tag
+from taggit.forms import TagWidget
 
 # Forms for User and Profile Update
 class UserUpdateForm(forms.ModelForm):
@@ -23,16 +24,12 @@ class PostForm(forms.ModelForm):
         fields = ['author', 'title', 'content', 'tags']
         widgets = {
             'content': forms.Textarea(attrs={'rows': 10, 'cols': 80}),
+            'tags': TagWidget(),
         }
         labels = {
             'content': 'Post Content',
         }  
-        TagWidget = forms.CheckboxSelectMultiple()
-        tags = forms.ModelMultipleChoiceField(
-            queryset=Tag.objects.all(),
-            widget=TagWidget,
-            required=False
-        )
+        
         # Ensure form supports creation of new tags
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
