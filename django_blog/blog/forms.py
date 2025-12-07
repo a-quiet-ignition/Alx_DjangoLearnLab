@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Profile, Post, Comment
+from .models import Profile, Post, Comment, Tag
 
 # Forms for User and Profile Update
 class UserUpdateForm(forms.ModelForm):
@@ -20,7 +20,22 @@ class ProfileUpdateForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['author', 'title', 'content']
+        fields = ['author', 'title', 'content', 'tags']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 10, 'cols': 80}),
+        }
+        labels = {
+            'content': 'Post Content',
+        }  
+        
+        # Ensure form supports creation of new tags
+    def __init__(self, *args, **kwargs):
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.fields['tags'].queryset = Tag.objects.all()
+        self.fields['tags'].help_text = 'Select existing tags or add new ones separated by commas.'
+        self.fields['tags'].widget.attrs.update({'multiple': 'multiple'})
+        self.fields['tags'].to_field_name = 'name'
+
         
 
 # Comment Form

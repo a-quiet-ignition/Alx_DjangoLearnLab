@@ -5,6 +5,17 @@
 
 {% block content %}
   <h1>Blog Posts</h1>
+
+  {% comment %} Search Function {% endcomment %}
+  <form method="GET" action="{% url 'post_search' %}" class="search-form">
+    <input type="text" 
+           name="q" 
+           placeholder="Search posts by title, content, or tags..." 
+           value="{{ query }}"
+           required>
+    <button type="submit">Search</button>
+</form>
+
   <ul>
     {% for post in posts %}
       <li>

@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, ListView, DetailView, UpdateView, DeleteView
-from .models import Post, Comment
+from .models import Post, Comment, Profile, Tag
 from .forms import UserUpdateForm, ProfileUpdateForm, PostForm, CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
 
 # Create your views here.
 class SignUpView(CreateView):
@@ -60,13 +61,13 @@ class PostDetailView(DetailView):
 class PostCreateView(CreateView):
     model = Post
     template_name = 'blog/post_form.html'
-    fields = ['author', 'title', 'content']
+    fields = ['author', 'title', 'content', 'tags']
     success_url = reverse_lazy('post_list')
     
 class PostUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
     model = Post
     template_name = 'blog/post_form.html'
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'tags']
     success_url = reverse_lazy('post_list')
     
     # Permission check for update
@@ -84,27 +85,53 @@ class PostDeleteView(DeleteView):
         post = self.get_object()
         return self.request.user == post.author
     
+class PostSearchView(ListView):
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        
+        if query:
+            # Search in title, content, and tags
+            posts = Post.objects.filter(
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)
+            ).distinct()
+        else:
+            posts = Post.objects.none()
+        
+        return posts
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        return context
 
    
 # Comment Model Views
 
 class CommentCreateView(LoginRequiredMixin, CreateView): 
     model = Comment
-    form_class = CommentForm
+    fields = ['content']
     template_name = 'blog/comment_form.html'
     
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.post_id = self.kwargs['post_id']  
+        form.instance.post_id = self.kwargs['pk']  
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['post_id']})  
+        return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['pk']})  
 
 class CommentUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
     model = Comment
-    form_class = CommentForm
+    fields = ['content']
     template_name = 'blog/comment_form.html'
+    
     
     def get_success_url(self):
         return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
@@ -117,7 +144,7 @@ class CommentUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
     
 class CommentDeleteView(DeleteView, UserPassesTestMixin, LoginRequiredMixin):
     model = Comment
-    template_name = 'blog/post_detail.html'
+    template_name = 'blog/comment_confirm_delete.html'
     
     def get_success_url(self):
         return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
