@@ -27,7 +27,12 @@ class PostForm(forms.ModelForm):
         labels = {
             'content': 'Post Content',
         }  
-        
+        TagWidget = forms.CheckboxSelectMultiple()
+        tags = forms.ModelMultipleChoiceField(
+            queryset=Tag.objects.all(),
+            widget=TagWidget,
+            required=False
+        )
         # Ensure form supports creation of new tags
     def __init__(self, *args, **kwargs):
         super(PostForm, self).__init__(*args, **kwargs)
