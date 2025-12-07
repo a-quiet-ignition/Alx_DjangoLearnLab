@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, ListView, DetailView, UpdateView, DeleteView
-from .models import Post
-from .forms import UserUpdateForm, ProfileUpdateForm
+from .models import Post, Comment
+from .forms import UserUpdateForm, ProfileUpdateForm, PostForm, CommentForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 # Create your views here.
@@ -52,6 +52,11 @@ class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.filter(post=self.object)
+        return context
+    
 class PostCreateView(CreateView):
     model = Post
     template_name = 'blog/post_form.html'
@@ -78,4 +83,92 @@ class PostDeleteView(DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+    
+
+   
+# Comment Model Views
+
+class CommentCreateView(LoginRequiredMixin, CreateView): 
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post_id = self.kwargs['post_id']  
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['post_id']})  
+
+class CommentUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+    
+    # Permission check for update
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+    
+    
+class CommentDeleteView(DeleteView, UserPassesTestMixin, LoginRequiredMixin):
+    model = Comment
+    template_name = 'blog/post_detail.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+    
+    # Permission check for deletion
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+
+# class CommentListView(ListView):
+#     model = Comment
+#     template_name = 'blog/post_detail.html'
+#     context_object_name = 'comments'
+
+# class CommentCreateView(CreateView): 
+#     model = Comment
+#     form_class = CommentForm
+#     template_name = 'blog/comment_form.html'
+    
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         form.instance.post_id = self.kwargs['post_id']
+#         return super().form_valid(form)
+    
+#     def get_success_url(self):
+#         return reverse_lazy('post_detail', kwargs={'pk': self.kwargs['post_id']})
+    
+# class CommentUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
+#     model = Comment
+#     form_class = CommentForm
+#     template_name = 'blog/comment_form.html'
+    
+#     def get_success_url(self):
+#         return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+    
+#     # Permission check for update
+#     def test_func(self):
+#         comment = self.get_object()
+#         return self.request.user == comment.author
+    
+# class CommentDeleteView(DeleteView, UserPassesTestMixin, LoginRequiredMixin):
+#     model = Comment
+#     template_name = 'blog/post_detail.html'
+    
+#     def get_success_url(self):
+#         return reverse_lazy('post_detail', kwargs={'pk': self.object.post.pk})
+    
+#     # Permission check for deletion
+#     def test_func(self):
+#         comment = self.get_object()
+#         return self.request.user == comment.author
+    
     
