@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import CustomUser
+from .models import CustomUser, Post, Comment
 
 
 # Serializer for the CustomUser model
@@ -10,6 +10,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = '__all__'
+        
+    def create(self, validated_data):
+        user = CustomUser.objects.create(**validated_data)
+        return user
         
 # Serializer for user registration
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -44,5 +48,25 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         fields = ['bio', 'profile_picture', 'location']
         
         
-get_user_model().objects.create_user
-serializers.CharField()
+# Post Serializers
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'
+        
+    def create(self, validated_data):
+        post = Post.objects.create(**validated_data)
+        return post
+        
+
+# Comment Serializers
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        
+    def create(self, validated_data):
+        comment = Comment.objects.create(**validated_data)
+        return comment
+    
+    
