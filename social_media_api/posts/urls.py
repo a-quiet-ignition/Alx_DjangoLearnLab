@@ -8,4 +8,5 @@ router.register(r'comments', CommentViewSet, basename='comment')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('feed/', include('social_media_api.posts.feed_urls')),
 ]
