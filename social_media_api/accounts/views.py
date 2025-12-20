@@ -29,7 +29,7 @@ class UserLoginView(APIView):
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
-class UserProfileView(APIView):
+class UserProfileView(generics.GenericAPIView):
     def get(self, request, username):
         try:
             user = CustomUser.objects.get(username=username)
