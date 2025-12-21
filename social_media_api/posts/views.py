@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, generics
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from social_media_api.notifications.models import Notification
+from notifications.models import Notification
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from rest_framework.decorators import action
@@ -83,7 +83,7 @@ class LikeViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def like(self, request, post_pk=None):
-        post = get_object_or_404(Post, pk=post_pk)
+        post = generics.get_object_or_404(Post, pk=post_pk)
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         
         if created:

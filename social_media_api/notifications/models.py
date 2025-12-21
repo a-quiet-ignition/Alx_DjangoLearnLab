@@ -7,7 +7,9 @@ class Notification(models.Model):
     recipient = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='notifications')
     actor = models.ForeignKey('accounts.CustomUser', on_delete=models.CASCADE, related_name='actions')
     verb = models.CharField(max_length=255)
-    target = models.GenericForeignKey('contenttypes.ContentType', 'target_id')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    target_id = models.PositiveIntegerField(null=True, blank=True)
+    target = GenericForeignKey('content_type', 'target_id')
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
