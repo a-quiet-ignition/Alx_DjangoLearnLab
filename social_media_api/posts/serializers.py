@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Comment
+from .models import Post, Comment, Like
 
 
         
@@ -24,4 +24,13 @@ class CommentSerializer(serializers.ModelSerializer):
         comment = Comment.objects.create(**validated_data)
         return comment
     
-    
+
+# Like Serializers
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
+        
+    def create(self, validated_data):
+        like = Like.objects.create(**validated_data)
+        return like

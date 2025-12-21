@@ -10,7 +10,7 @@ from .serializers import CustomUserSerializer, UserRegistrationSerializer, UserP
 
 
 # Create your views here.
-class UserRegistrationView(APIView):
+class UserRegistrationView(generics.GenericAPIView):
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -19,7 +19,7 @@ class UserRegistrationView(APIView):
             return Response({'token': token.key}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class UserLoginView(APIView):
+class UserLoginView(generics.GenericAPIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')

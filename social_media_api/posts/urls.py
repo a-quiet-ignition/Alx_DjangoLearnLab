@@ -1,12 +1,14 @@
 from django.urls import path, include
-from .views import PostViewSet, CommentViewSet
+from .views import PostViewSet, CommentViewSet, UserFeedViewSet, LikeViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'posts', PostViewSet, basename='post')
 router.register(r'comments', CommentViewSet, basename='comment')
+router.register(r'feed', UserFeedViewSet, basename='feed')
+router.register(r'likes', LikeViewSet, basename='like')
+
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('feed/', include('social_media_api.posts.feed_urls')),
 ]
