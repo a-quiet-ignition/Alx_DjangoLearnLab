@@ -82,8 +82,8 @@ class LikeViewSet(viewsets.ModelViewSet):
         return Like.objects.filter(user=user)
     
     @action(detail=False, methods=['post'])
-    def like(self, request, post_pk=None):
-        post = generics.get_object_or_404(Post, pk=post_pk)
+    def like(self, request, pk=None):
+        post = generics.get_object_or_404(Post, pk=pk)
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         
         if created:
