@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
+from social_media_api.notifications.models import Notification
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
 from rest_framework.decorators import action
@@ -63,8 +64,8 @@ class UserFeedViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        followed_users = user.following.all()
-        return Post.objects.filter(author__in=followed_users).order_by('-created_at')
+        following_users = user.following.all()
+        return Post.objects.filter(author__in=following_users).order_by('-created_at')
     
     
 # Views for handling liking and unliking posts
@@ -80,13 +81,30 @@ class LikeViewSet(viewsets.ModelViewSet):
         user = self.request.user
         return Like.objects.filter(user=user)
     
-    def like(self, request, pk=None):
-        post = Post.objects.get(pk=pk)
-        like, created = Like.objects.get_or_create(post=post, user=request.user)
+    @action(detail=False, methods=['post'])
+    def like(self, request, post_pk=None):
+        post = get_object_or_404(Post, pk=post_pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        
         if created:
-            return Response({'status': 'Post liked'}, status=status.HTTP_201_CREATED)
+            if post.author != request.user:
+                Notification.objects.create(
+                    recipient=post.author,
+                    sender=request.user,
+                    verb='liked your post',
+                    target_object_id=post.id
+                )
+            
+            return Response({
+                'status': 'Post liked',
+                'post_id': post.id,
+                'user': request.user.username
+            }, status=status.HTTP_201_CREATED)
         else:
-            return Response({'status': 'You have already liked this post'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'status': 'You have already liked this post',
+                'post_id': post.id
+            }, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=['post'])
     def unlike(self, request, pk=None):
